@@ -1,3 +1,4 @@
+
 /*######################################################################################
 #                         Lisp interpreter in JavaScript                               #
 #                        ________________________________                              #
@@ -26,7 +27,7 @@
 
 var tokenize=function(str){
 
-    return str.replace(/[(_]/g,' ( ').replace(/[)_]/g,' ) ').trim().split(/\ +/);
+    return str.replace(/\(/g,' ( ').replace(/\)/g,' ) ').trim().split(/\ +/);
 }
 
 /*#####################################################################################
@@ -73,7 +74,7 @@ var readFromTokens= function(tokens){
 
 var atom=function(token){
     if(isNaN(Number(token))==true)
-        return String(token)
+        return token
     else 
         return Number(token)
     
@@ -99,27 +100,25 @@ var parse=function(program){
 #####################################################################################*/
 
 
-Env=Object
-var stdEnv=function(){
-    env=Env()
-    function add(a,b){return a+b}
-    function sub(a,b){return a-b}
-    function mul(a,b){return a*b}
-    function div(a,b){return a/b}
-    function lt(a,b){return a<b}
-    function gt(a,b){return a>b}
-    function eq(a,b){return a==b}
-    function geq(a,b){return a>=b}
-    function leq(a,b){return a<=b}
-    function begin(x){return x}
-    function car(x){return x[0]}
-    function cdr(x){return x.slice(1)}
-    function not(x){return !(x)}
-    function cons(x, y){ 
+function add(a,b){return a+b}
+function sub(a,b){return a-b}
+function mul(a,b){return a*b}
+function div(a,b){return a/b}
+function lt(a,b){return a<b}
+function gt(a,b){return a>b}
+function eq(a,b){return a==b}
+function geq(a,b){return a>=b}
+function leq(a,b){return a<=b}
+function begin(x){return x}
+function car(x){return x[0]}
+function cdr(x){return x.slice(1)}
+function not(x){return !(x)}
+function cons(x, y){ 
         y.unshift(x)
         return y
     }
 
+var stdEnv=function(env){
     Object.assign(env,{ 'sin':Math.sin,'cos':Math.cos,'tan':Math.tan,'pow':Math.pow,
                         'log':Math.log,'pi':3.141592653589793,'abs':Math.abs,
                         'min':Math.min,'max':Math.max,'sqrt':Math.sqrt,'+':add,
@@ -131,6 +130,36 @@ var stdEnv=function(){
 
 }
 
+//#####################################################################################
+
+var newenv=function(denv){
+    var i;
+    var env={};
+    var global=denv.globl||{};
+    var getglob = function () {
+        return global;
+    };  
+        
+    var find = function (variable) {
+        if (env.hasOwnProperty(variable)) {
+            return env;
+        } else {
+            return global.find(variable);
+        }
+    };  
+ 
+    if(0!==denv.parms.length){
+        for(i=0;i<denv.parms.length;i+=1){
+
+            env[denv.parms[i]]=denv.args[i];
+
+        }
+    }
+    env.find=find;
+    env.getglob=getglob;
+    return env;
+};
+
 
 /*#####################################################################################
  
@@ -141,55 +170,51 @@ var stdEnv=function(){
 
 #####################################################################################*/
 
-Gev=stdEnv()
+var Gev=stdEnv(newenv({parms:[],args:[],globl:undefined}))
 
-
-var Eval=function(x,env){
-    env=Gev
- 
-    if (typeof(x)=='number'){
+var Eval=function(x,env) {
+    env=env||Gev
+    var i
+    if(typeof(x)==='string'){
+        return env.find(x.valueOf())[x.valueOf()];
+    }   
+    else if (typeof(x)==='number'){
         return x
     }   
-    else if(Gev[x]!=undefined){
-        return env[x]
-    }   
-    else if(typeof(x)=='object'){
-        var args=[]
-        if(x[0]=='if'){
-            var [test,conseq,alt]=x.slice(1)
-            if(Eval(test,env)==true)
-                return Eval(conseq,env)
-            else
-                return Eval(alt,env)
+    else if(x[0]==='if'){
+        var [test,conseq,alt]=x.slice(1)
+        if(Eval(test,env)==true)
+            return Eval(conseq,env)
+        else
+             return Eval(alt,env)
         }
-        else if(x[0]=='define'){
-            var [Var,exp]=x.slice(1)
-            v=Var
-            e=Eval(exp,env)
-            Gev[v]=e
+        else if(x[0]==='define'){
+            env[x[1]]=Eval(x[2],env)
         }
-        else if(typeof(env[x[0]])=='function'){
-            var proc=Eval(x[0],env)
-            var i=1
-            while(x[i]!=undefined){
-    
-                args.push(Eval(x[i],env))
-                i=i+1
+        else if(x[0]==='lambda'){
+            var [parm,exp]=x.slice(1)
+            return function(){
+                return Eval(exp,newenv({parms:parm,args:arguments,globl:env}))
             }
-        
-            return proc.apply(this,args)
+
+        }
+        else{
+            var argp=[]
+           // console.log(Eval(x[0],env))
+           for(i=0;i<x.length;i+=1){
+                argp[i]=Eval(x[i],env);
+            }
+           var proc=argp.shift()
+           return proc.apply(env,argp)
+           
         }
 
-    }
-    else
-        return x
-    
-
+   
 }
+
 
 //<--------------------------------------------------------------------------------->//
 
-program = "(define de 200)"
-p1='(cons 1 (cdr (list (* pi (* 5 de)) (* 2 de) 3 5.65 hai hello fine (list 2 hgsk isi))))'
+program = "(define de (lambda (x) ( if(= x 1) 1 (* x (de (- x 1))))))"
 Eval(parse(program))
-console.log(Eval(parse(p1)))
+console.log(Eval(parse('(de 6)')))
