@@ -104,6 +104,7 @@ function add(a,b){return a+b}
 function sub(a,b){return a-b}
 function mul(a,b){return a*b}
 function div(a,b){return a/b}
+function mod(a,b){return a%b}
 function lt(a,b){return a<b}
 function gt(a,b){return a>b}
 function eq(a,b){return a==b}
@@ -122,7 +123,7 @@ var stdEnv=function(env){
     Object.assign(env,{ 'sin':Math.sin,'cos':Math.cos,'tan':Math.tan,'pow':Math.pow,
                         'log':Math.log,'pi':3.141592653589793,'abs':Math.abs,
                         'min':Math.min,'max':Math.max,'sqrt':Math.sqrt,'+':add,
-                        '-':sub,'*':mul,'/':div,'<':lt,'>':gt,'=':eq,'>=':geq,
+                        '-':sub,'*':mul,'/':div,'mod':mod,'<':lt,'>':gt,'=':eq,'>=':geq,
                         '<=':leq,'append':add,'begin':begin,'cdr':cdr,'car':car, 
                         'equal?':eq,'not':not, 'list':Array, 'cons':cons})
 
@@ -215,6 +216,16 @@ var Eval=function(x,env) {
 
 //<--------------------------------------------------------------------------------->//
 
-program = "(define de (lambda (x) ( if(= x 1) 1 (* x (de (- x 1))))))"
-Eval(parse(program))
-console.log(Eval(parse('(de 6)')))
+program1 = "(define fib (lambda  (n) (if (<= n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))"
+Eval(parse(program1))
+console.log(Eval(parse('(fib 6)')))
+
+
+program2='(define fact (lambda (x) (if (= x 0) 1 (* x (fact (- x 1))))))'
+Eval(parse(program2))
+console.log(Eval(parse('(fact 6)')))
+
+
+program4='(define sumd (lambda (x) (if (= x 0) 0 (+ (mod x 10) (sumd(/ (- x (mod x 10)) 10)))))))'
+Eval(parse(program4))
+console.log(Eval(parse('(sumd 123456789)')))
