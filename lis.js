@@ -131,8 +131,15 @@ var stdEnv=function(env){
 
 }
 
-//#####################################################################################
+/*#####################################################################################
 
+                             Creating new Environment 
+
+            input :==> {parms:parm , args: arguments, globl:env}
+            output:==> {find:[Function], getglob:[Function], 
+                            parm1:argument1, parm2:argument2, ...}
+
+#####################################################################################*/
 var newenv=function(denv){
     var i;
     var env={};
@@ -141,7 +148,10 @@ var newenv=function(denv){
         return global;
     };  
         
-    var find = function (variable) {
+    var find = function (variable) {    /*Finds whether a variable inside the
+                                            environment and returns environment*/
+                                        /*Used for finding functions both derived 
+                                            and built in*/
         if (env.hasOwnProperty(variable)) {
             return env;
         } else {
@@ -177,7 +187,8 @@ var Eval=function(x,env) {
     env=env||Gev
     var i
     if(typeof(x)==='string'){
-        return env.find(x.valueOf())[x.valueOf()];
+        return env.find(x.valueOf())[x.valueOf()];/*Usage of function find 
+                                                        returns value of string*/
     }   
     else if (typeof(x)==='number'){
         return x
