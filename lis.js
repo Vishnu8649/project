@@ -226,16 +226,20 @@ var Eval=function(x,env) {
 
 
 //<--------------------------------------------------------------------------------->//
+//PROGRAM 1: Fibonacci
 
 program1 = "(define fib (lambda  (n) (if (<= n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))"
 Eval(parse(program1))
 console.log(Eval(parse('(fib 6)')))
 
+//PROGRAM 2: Factorial
 
 program2='(define fact (lambda (x) (if (= x 0) 1 (* x (fact (- x 1))))))'
 Eval(parse(program2))
 console.log(Eval(parse('(fact 6)')))
 
+
+//PROGRAM 3: Sum Of Digits
 
 program4='(define sumd (lambda (x) (if (= x 0) 0 (+ (mod x 10) (sumd(/ (- x (mod x 10)) 10)))))))'
 Eval(parse(program4))
