@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="paint.css">
+	<title>My Paint</title>
+	<h1 style='font-family:"Comic Sans MS", cursive, sans-serif;'>Draw Here</h1>
+</head>
+<body style="align-content: center; background-color: grey">
+		<div id="paint-app">
+			
+	<canvas onclick="func()" style=" vertical-align: middle; background-color: #fff; border: solid; border-width: 10px; border-color: tomato"  id='canvas' width="500px" height="500px"></canvas>
+
+	<br>
+	<br>
+	</div>
+	<div id='button'>
+<button onclick="pencil()"  id='Brush'>Brush</button>
+<button id='brushwidth'>Size</button>
+
+<button id='col2'>Brush Color</button>
+<button id='clear'>Clear All</button>
+<button onclick="f1()" >Change background</button>
+
+<button id='erase'>erase</button>
+</div>
+<script type="text/javascript">
+drag=false
+	
+var ctx = canvas.getContext('2d');
+var pos = { x: 500, y: 500 };
+var size=document.getElementById('brushwidth')
+
+size.addEventListener('click',function(e){
+	d=prompt('Enter brush size')
+	ctx.lineWidth=Number(d)
+})
+f1=function(){
+		var d=prompt('Enter colour code from #000 to #fff')
+		document.getElementsByTagName('CANVAS')[0].style.backgroundColor=d
+	}
+function pencil(){
+ 	ctx.globalCompositeOperation="source-over";
+	var er=document.getElementById('erase');
+	er.addEventListener('click',function(e){
+		ctx.globalCompositeOperation = "destination-out";
+  		ctx.strokeStyle = rgba(0,0,0,10);
+	});
+	canvas.addEventListener('mousemove', draw);
+	canvas.addEventListener('mousedown', setPosition);
+	canvas.addEventListener('mouseenter', setPosition);
+	var rect=document.getElementById('drawrect')
+ 	var button=document.getElementById('col2');
+	button.addEventListener('click',function(evt){
+		d=prompt('colour');
+		ctx.strokeStyle=d;
+		document.getElementsByTagName('BUTTON')[2].style.backgroundColor=d;
+	},false)
+
+	function setPosition(e) {
+  	pos.x = e.clientX-390;
+  	pos.y = e.clientY-70;
+	}
+
+	function draw(e) {
+		e.preventDefault()
+
+  		if (e.buttons !== 1) return;
+
+  		ctx.beginPath(); 
+  		ctx.lineCap = 'round';
+  		ctx.moveTo(pos.x, pos.y); 
+  		setPosition(e);
+  		ctx.lineTo(pos.x, pos.y); 
+
+  		ctx.stroke(); 
+
+	}
+}
+var clear=document.getElementById('clear')
+clear.addEventListener('click',clearf)
+function clearf(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	document.getElementsByTagName('CANVAS')[0].style.backgroundColor='#fff'
+}
+</script>
+</body>
+</html>

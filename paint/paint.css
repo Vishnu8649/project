@@ -1,0 +1,22 @@
+button{
+	background-color:powderblue ; border-color: black; color: black  ;height:30px;
+	font-family:"Lucida Console", Monaco, monospace;
+	font-style: bold
+}
+head{
+	font-family:"Lucida Console", Monaco, monospace;
+}
+h1{
+	margin-left:auto; margin-right: auto;width: 250px; color: darkred ; 
+	font-family:"Lucida Console", Monaco, monospace;
+}
+#button{
+	margin-left: auto;
+  margin-right: auto;
+  width: 600px;
+}
+#paint-app {
+  margin-left: auto;
+  margin-right: auto;
+  width: 590px;
+}
