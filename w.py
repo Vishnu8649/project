@@ -29,7 +29,7 @@ import socket
 import os,os.path,time
 
 def server():               #server and multiclient handling
-    HOST, PORT = '', 8887
+    HOST, PORT = '', 8888
     nos= 6
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -64,6 +64,8 @@ def handler(client):         #file handler
         if fname.split('.')[-1] in ctype.keys():
             flag=True
             c=ctype[fname.split('.')[-1]]
+            if fname.split('.')[-1]=='txt':
+                time.sleep(30)
             if os.path.isfile(fname):
                 f=open(fname,'rb')
                 d=f.read()
